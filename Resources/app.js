@@ -16,10 +16,10 @@ var compassHeading = Ti.UI.createLabel({});
 var direction = Ti.UI.createLabel({});
 
 function updateLabels(_args) {
-	compassHeading.text = _args.magneticHeading+ ' degrees';
+	compassHeading.text = _args.heading.magneticHeading+ ' degrees';
 	
 	var headingText = null;
-	var h = _args.magneticHeading;
+	var h = _args.heading.magneticHeading;
 	switch(true) {
 		case h>=0&&h<23:
 			headingText = 'N';
@@ -52,9 +52,12 @@ function updateLabels(_args) {
 	direction.text = 'You are looking '+headingText;
 }
 
-Ti.Geolocation.addEventListener("heading", updateLabels);
+Ti.Geolocation.purpose = 'To get the compass bearing';
 
 vertVw.add(compassHeading);
 vertVw.add(direction);
 win1.add(vertVw);
 win1.open();
+
+win1.addEventListener('blur', function() {Ti.Geolocation.removeEventListener("heading", updateLabels);});
+win1.addEventListener('focus', function() {Ti.Geolocation.addEventListener("heading", updateLabels);});
