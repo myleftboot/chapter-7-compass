@@ -1,64 +1,32 @@
+// All source code Copyright 2013 Cope Consultancy Services. All rights reserved
+
+
 // this sets the background color of the master UIView (when there are no windows/tab groups on it)
 Titanium.UI.setBackgroundColor('#000');
 
-// create tab group
-var tabGroup = Titanium.UI.createTabGroup();
-
-
-//
-// create base UI tab and root window
+// create base root window
 //
 var win1 = Titanium.UI.createWindow({  
-    title:'Tab 1',
     backgroundColor:'#fff'
 });
-var tab1 = Titanium.UI.createTab({  
-    icon:'KS_nav_views.png',
-    title:'Tab 1',
-    window:win1
-});
 
-var label1 = Titanium.UI.createLabel({
-	color:'#999',
-	text:'I am Window 1',
-	font:{fontSize:20,fontFamily:'Helvetica Neue'},
-	textAlign:'center',
-	width:'auto'
-});
+var vertVw = Ti.UI.createView({layout: 'vertical'});
 
-win1.add(label1);
+var compassHeading = Ti.UI.createLabel({});
+var direction = Ti.UI.createLabel({});
 
-//
-// create controls tab and root window
-//
-var win2 = Titanium.UI.createWindow({  
-    title:'Tab 2',
-    backgroundColor:'#fff'
-});
-var tab2 = Titanium.UI.createTab({  
-    icon:'KS_nav_ui.png',
-    title:'Tab 2',
-    window:win2
-});
+function updateLabels(_args) {
+	compassHeading.text = _args.magneticHeading+ ' degrees';
+	
+	var heading = null;
+	
+	
+	direction.text = heading;
+}
 
-var label2 = Titanium.UI.createLabel({
-	color:'#999',
-	text:'I am Window 2',
-	font:{fontSize:20,fontFamily:'Helvetica Neue'},
-	textAlign:'center',
-	width:'auto'
-});
+Ti.Geolocation.addEventListener("heading", updateLabels);
 
-win2.add(label2);
-
-
-
-//
-//  add tabs
-//
-tabGroup.addTab(tab1);  
-tabGroup.addTab(tab2);  
-
-
-// open tab group
-tabGroup.open();
+vertVw.add(compassHeading);
+vertVw.add(direction);
+win1.add(vertVw);
+win1.open();
