@@ -10,16 +10,27 @@ var win1 = Titanium.UI.createWindow({
     backgroundColor:'#fff'
 });
 
+var theHeading = 90;
 var vertVw = Ti.UI.createView({layout: 'vertical'});
-
+var ARView = Ti.UI.createView({layout: 'vertical'
+	                          ,background: 'transparent'});
+var Heading = Ti.UI.createLabel({color: 'red',
+	                             font: {fontSize: '80dp'}
+	                            });
+	                            
 var compassHeading = Ti.UI.createLabel({});
 var direction = Ti.UI.createLabel({});
 
 function updateLabels(_args) {
+	Ti.API.info('Called'); 	
 	compassHeading.text = _args.heading.magneticHeading+ ' degrees';
+	
+	theHeading = _args.heading.magneticHeading;
+	Heading.text = theHeading;
 	
 	var headingText = null;
 	var h = _args.heading.magneticHeading;
+	
 	switch(true) {
 		case h>=0&&h<23:
 			headingText = 'N';
@@ -54,10 +65,37 @@ function updateLabels(_args) {
 
 Ti.Geolocation.purpose = 'To get the compass bearing';
 
+ARButton = Ti.UI.createButton({title: 'Follow bearing in AR'});
+ARButton.addEventListener('click', showARView);
+
+function displayHeadingOnAR(_args) {
+	
+//	var horizon = Ti.UI.createView({width: 2
+//		                       ,color: 'red'
+//		                       ,top:    '50%'
+//		                    });
+
+//	ARView.add(horizon);
+	ARView.add(Heading);
+};
+
+function showARView() {
+    
+Ti.Media.showCamera({animated:     false,
+	                 autoHide:     false,
+	                 showControls: false,
+	                 autofocus:    false,
+	                 overlay:      ARView
+	              });
+	displayHeadingOnAR();
+}
+
 vertVw.add(compassHeading);
 vertVw.add(direction);
+vertVw.add(ARButton);
 win1.add(vertVw);
 win1.open();
 
-win1.addEventListener('blur', function() {Ti.Geolocation.removeEventListener("heading", updateLabels);});
+
+win1.addEventListener('close', function() {Ti.Geolocation.removeEventListener("heading", updateLabels);});
 win1.addEventListener('focus', function() {Ti.Geolocation.addEventListener("heading", updateLabels);});
