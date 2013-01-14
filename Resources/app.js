@@ -10,23 +10,94 @@ var win1 = Titanium.UI.createWindow({
     backgroundColor:'#fff'
 });
 
-var theHeading = 90;
+var viewAngle = 15;
+var pixelsPerDegree = Ti.Platform.displayCaps.platformWidth / viewAngle;
+var theBearing = 2;
+var lastHeading = 0;
+
 var vertVw = Ti.UI.createView({layout: 'vertical'});
 var ARView = Ti.UI.createView({layout: 'vertical'
 	                          ,background: 'transparent'});
 var Heading = Ti.UI.createLabel({color: 'red',
-	                             font: {fontSize: '80dp'}
+	                             font: {fontSize: '80dp'},
+	                             text: theBearing,
+	                             center: {x:Ti.Platform.displayCaps.platformWidth/2, y:'50%'}
 	                            });
 	                            
 var compassHeading = Ti.UI.createLabel({});
 var direction = Ti.UI.createLabel({});
 
-function updateLabels(_args) {
-	Ti.API.info('Called'); 	
-	compassHeading.text = _args.heading.magneticHeading+ ' degrees';
+function getHighBearing(_args) {
+	if (_args < (viewAngle / 2)) return 360 + _args;
+	else return _args;
+};
+
+function getLowBearing(_args) {
+	if ((360 - _args) < (viewAngle / 2)) return (360 - _args) * -1;
+	else return _args;
+};
+//TODO need to work on the wraparound
+//TODO something needs to be done to rotate the display on Android
+//TODO I think that it needs to be set to landscape
+
+function updateARView(_args) {
+	// update the position of Heading
+	Ti.API.info('New Bearing'+_args.newBearing+ 'High'+ getHighBearing(_args.newBearing)+'Low'+getLowBearing(_args.newBearing));
+	// if the new heading is within -7.5 to +7.5 of the bearing then its on the display
+	if (Math.abs(_args.newBearing - theBearing) <= viewAngle / 2) {
+		// its a candidate for display
+		Ti.API.info('Its in range, display it');
+		Heading.show();
+		// now compute its postion or move it
+		var existingPosition = JSON.stringify(Heading.center);
+		Ti.API.info(existingPosition);
+		
+		var newX = Ti.Platform.displayCaps.platformWidth / 2 - (_args.newBearing - theBearing) * pixelsPerDegree;
+		Ti.API.info('newX '+newX);
+		moveIt = Ti.UI.createAnimation({center:{x:newX, y:'50%'},duration:0.5});
+		Heading.animate(moveIt);
+	} else
+	{
+		Ti.API.info('Not in the display, hide it');
+		Heading.hide();
+	}
+
+};
+
+function simulatorAR() {
+	ARView.backgroundColor = 'white';
+	win1.add(ARView);
 	
-	theHeading = _args.heading.magneticHeading;
-	Heading.text = theHeading;
+	// add slider to the window
+	var slider = Ti.UI.createSlider({
+		backgroundColor:'transparent',
+		min: 0,
+		max: 10,
+		value: theBearing/360*10,
+		width: 300,
+		top: 10
+	});
+
+	slider.addEventListener('change', function(e) {
+		updateARView({newBearing: e.value * 36});
+	});
+	ARView.add(slider);
+	displayHeadingOnAR();
+};
+
+function isOnDisplay(_args) {
+	// Parameters 
+	// currentHeading -- the compass reading
+	// if the heading is within +- 7.5 degrees of the bearing then it must be on the display
+	if (abs(_args.currentHeading - getLowBearing(theBearing)) <= viewAngle / 2) {
+		Ti.API.info('its in range');
+	}
+}
+
+
+
+function updateLabels(_args) {
+	compassHeading.text = _args.heading.magneticHeading+ ' degrees';
 	
 	var headingText = null;
 	var h = _args.heading.magneticHeading;
@@ -60,7 +131,9 @@ function updateLabels(_args) {
 			headingText = 'N';
 			break;
              }
+    lastHeading = _args.heading.magneticHeading;
 	direction.text = 'You are looking '+headingText;
+	updateARView({newBearing: _args.heading.magneticHeading});
 }
 
 Ti.Geolocation.purpose = 'To get the compass bearing';
@@ -76,18 +149,24 @@ function displayHeadingOnAR(_args) {
 //		                    });
 
 //	ARView.add(horizon);
+    
 	ARView.add(Heading);
 };
 
 function showARView() {
-    
-Ti.Media.showCamera({animated:     false,
+	if (Ti.Platform.model === 'Simulator' || Ti.Platform.model.indexOf('sdk') !== -1 ){
+		simulatorAR();
+	} else {
+		Ti.Media.showCamera({animated:     false,
 	                 autoHide:     false,
 	                 showControls: false,
 	                 autofocus:    false,
 	                 overlay:      ARView
 	              });
-	displayHeadingOnAR();
+	    theBearing = lastHeading;
+		displayHeadingOnAR();
+	}
+
 }
 
 vertVw.add(compassHeading);
