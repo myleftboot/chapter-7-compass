@@ -10,9 +10,9 @@ var win1 = Titanium.UI.createWindow({
     backgroundColor:'#fff'
 });
 
-var viewAngle = 15;
+var viewAngle = 15; // the viewable area of the display in degrees
 var pixelsPerDegree = Ti.Platform.displayCaps.platformWidth / viewAngle;
-var theBearing = 2;
+var theBearing;
 var lastHeading = 0;
 
 var vertVw = Ti.UI.createView({layout: 'vertical'});
@@ -20,45 +20,41 @@ var ARView = Ti.UI.createView({layout: 'vertical'
 	                          ,background: 'transparent'});
 var Heading = Ti.UI.createLabel({color: 'red',
 	                             font: {fontSize: '80dp'},
-	                             text: theBearing,
 	                             center: {x:Ti.Platform.displayCaps.platformWidth/2, y:'50%'}
 	                            });
 	                            
 var compassHeading = Ti.UI.createLabel({});
 var direction = Ti.UI.createLabel({});
 
-function getHighBearing(_args) {
-	if (_args < (viewAngle / 2)) return 360 + _args;
-	else return _args;
-};
+function newPosition(_args) {
 
-function getLowBearing(_args) {
-	if ((360 - _args) < (viewAngle / 2)) return (360 - _args) * -1;
-	else return _args;
-};
-//TODO need to work on the wraparound
-//TODO something needs to be done to rotate the display on Android
-//TODO I think that it needs to be set to landscape
+  var newHeading = _args.heading;
+  var newBearing = theBearing;
+  
+  // if heading near to N but slightly NE (such as 5 degrees), then bearings at 350+ need to be considered
+  if ((newHeading <= viewAngle /2) && (360 - theBearing <= viewAngle / 2)) newBearing -= 360;
+  // similarly if heading near to N but slightly NW (such as 355 degrees), then bearings at 5 or less need to be considered
+  if ((newHeading >= (360 - viewAngle /2)) && (theBearing <= viewAngle / 2)) newBearing += 360;
+  
+  // if the heading with within the confines of the screen i.e. less than half a screen from the centre line (viewAngle is the middle)
+  var isItOnScreen = (Math.abs(newHeading - newBearing) <= viewAngle / 2);
+  var newPosition = Ti.Platform.displayCaps.platformWidth / 2 + ((newBearing - newHeading) * pixelsPerDegree);
+
+  return {X: newPosition, onScreen: isItOnScreen};
+}
 
 function updateARView(_args) {
 	// update the position of Heading
-	Ti.API.info('New Bearing'+_args.newBearing+ 'High'+ getHighBearing(_args.newBearing)+'Low'+getLowBearing(_args.newBearing));
+	var newX = newPosition({heading: _args.newBearing})
 	// if the new heading is within -7.5 to +7.5 of the bearing then its on the display
-	if (Math.abs(_args.newBearing - theBearing) <= viewAngle / 2) {
+	if (newX.onScreen) {
 		// its a candidate for display
-		Ti.API.info('Its in range, display it');
 		Heading.show();
-		// now compute its postion or move it
-		var existingPosition = JSON.stringify(Heading.center);
-		Ti.API.info(existingPosition);
-		
-		var newX = Ti.Platform.displayCaps.platformWidth / 2 - (_args.newBearing - theBearing) * pixelsPerDegree;
-		Ti.API.info('newX '+newX);
-		moveIt = Ti.UI.createAnimation({center:{x:newX, y:'50%'},duration:0.5});
+		moveIt = Ti.UI.createAnimation({center:{x:newX.X, y:'50%'},duration:0});
 		Heading.animate(moveIt);
 	} else
 	{
-		Ti.API.info('Not in the display, hide it');
+		//Not in the display, hide it
 		Heading.hide();
 	}
 
@@ -84,16 +80,6 @@ function simulatorAR() {
 	ARView.add(slider);
 	displayHeadingOnAR();
 };
-
-function isOnDisplay(_args) {
-	// Parameters 
-	// currentHeading -- the compass reading
-	// if the heading is within +- 7.5 degrees of the bearing then it must be on the display
-	if (abs(_args.currentHeading - getLowBearing(theBearing)) <= viewAngle / 2) {
-		Ti.API.info('its in range');
-	}
-}
-
 
 
 function updateLabels(_args) {
@@ -142,28 +128,23 @@ ARButton = Ti.UI.createButton({title: 'Follow bearing in AR'});
 ARButton.addEventListener('click', showARView);
 
 function displayHeadingOnAR(_args) {
-	
-//	var horizon = Ti.UI.createView({width: 2
-//		                       ,color: 'red'
-//		                       ,top:    '50%'
-//		                    });
-
-//	ARView.add(horizon);
     
 	ARView.add(Heading);
 };
 
 function showARView() {
 	if (Ti.Platform.model === 'Simulator' || Ti.Platform.model.indexOf('sdk') !== -1 ){
+		Heading.text = 120; // set a value for the simulator
 		simulatorAR();
 	} else {
+	    theBearing = lastHeading;
 		Ti.Media.showCamera({animated:     false,
 	                 autoHide:     false,
 	                 showControls: false,
 	                 autofocus:    false,
 	                 overlay:      ARView
 	              });
-	    theBearing = lastHeading;
+        Heading.text = theBearing;
 		displayHeadingOnAR();
 	}
 

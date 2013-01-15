@@ -1,0 +1,17 @@
+eclipse.preferences.version=1
+provisioning_profiles/development/61B2C0E9-62A0-45A4-A797-376739E73E91/appid=com.myforex.ccs
+provisioning_profiles/development/61B2C0E9-62A0-45A4-A797-376739E73E91/filepath=/Users/Darren/Library/MobileDevice/Provisioning Profiles/61B2C0E9-62A0-45A4-A797-376739E73E91.mobileprovision
+provisioning_profiles/development/61B2C0E9-62A0-45A4-A797-376739E73E91/name=myForex Dev
+provisioning_profiles/development/61B2C0E9-62A0-45A4-A797-376739E73E91/uuid=61B2C0E9-62A0-45A4-A797-376739E73E91
+provisioning_profiles/development/75D953A6-50CF-4B38-AD35-C638964A205B/appid=com.yourbrandreality.flipscape
+provisioning_profiles/development/75D953A6-50CF-4B38-AD35-C638964A205B/filepath=/Users/Darren/Library/MobileDevice/Provisioning Profiles/75D953A6-50CF-4B38-AD35-C638964A205B.mobileprovision
+provisioning_profiles/development/75D953A6-50CF-4B38-AD35-C638964A205B/name=flipscapeDevelopment
+provisioning_profiles/development/75D953A6-50CF-4B38-AD35-C638964A205B/uuid=75D953A6-50CF-4B38-AD35-C638964A205B
+provisioning_profiles/development/8D5D122F-16E9-4C3D-8F61-2C0CFEEAFE6A/appid=uk.co.lccc.css
+provisioning_profiles/development/8D5D122F-16E9-4C3D-8F61-2C0CFEEAFE6A/filepath=/Users/Darren/Library/MobileDevice/Provisioning Profiles/8D5D122F-16E9-4C3D-8F61-2C0CFEEAFE6A.mobileprovision
+provisioning_profiles/development/8D5D122F-16E9-4C3D-8F61-2C0CFEEAFE6A/name=Lancashire CCC promo
+provisioning_profiles/development/8D5D122F-16E9-4C3D-8F61-2C0CFEEAFE6A/uuid=8D5D122F-16E9-4C3D-8F61-2C0CFEEAFE6A
+provisioning_profiles/development/DE5A16C7-DE7D-41BC-82F9-111A7865C9C9/appid=*
+provisioning_profiles/development/DE5A16C7-DE7D-41BC-82F9-111A7865C9C9/filepath=/Users/Darren/Library/MobileDevice/Provisioning Profiles/DE5A16C7-DE7D-41BC-82F9-111A7865C9C9.mobileprovision
+provisioning_profiles/development/DE5A16C7-DE7D-41BC-82F9-111A7865C9C9/name=Team Provisioning Profile\: *
+provisioning_profiles/development/DE5A16C7-DE7D-41BC-82F9-111A7865C9C9/uuid=DE5A16C7-DE7D-41BC-82F9-111A7865C9C9
