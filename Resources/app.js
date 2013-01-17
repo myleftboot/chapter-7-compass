@@ -19,8 +19,7 @@ var vertVw = Ti.UI.createView({layout: 'vertical'});
 var ARView = Ti.UI.createView({layout: 'vertical'
 	                          ,background: 'transparent'});
 var Heading = Ti.UI.createLabel({color: 'red',
-	                             font: {fontSize: '80dp'},
-	                             center: {x:Ti.Platform.displayCaps.platformWidth/2, y:'50%'}
+	                             font: {fontSize: '80dp'}
 	                            });
 	                            
 var compassHeading = Ti.UI.createLabel({});
@@ -134,7 +133,7 @@ function displayHeadingOnAR(_args) {
 
 function showARView() {
 	if (Ti.Platform.model === 'Simulator' || Ti.Platform.model.indexOf('sdk') !== -1 ){
-		Heading.text = 120; // set a value for the simulator
+		Heading.text = theBearing = 120; // set a value for the simulator
 		simulatorAR();
 	} else {
 	    theBearing = lastHeading;
