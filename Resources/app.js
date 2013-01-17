@@ -18,7 +18,7 @@ var lastHeading = 0;
 var vertVw = Ti.UI.createView({layout: 'vertical'});
 var ARView = Ti.UI.createView({layout: 'vertical'
 	                          ,background: 'transparent'});
-var Heading = Ti.UI.createLabel({color: 'red',
+var ARBearingLbl = Ti.UI.createLabel({color: 'red',
 	                             font: {fontSize: '80dp'}
 	                            });
 	                            
@@ -48,13 +48,13 @@ function updateARView(_args) {
 	// if the new heading is within -7.5 to +7.5 of the bearing then its on the display
 	if (newX.onScreen) {
 		// its a candidate for display
-		Heading.show();
-		moveIt = Ti.UI.createAnimation({center:{x:newX.X, y:'50%'},duration:0});
-		Heading.animate(moveIt);
+		ARBearingLbl.show();
+		moveLbl = Ti.UI.createAnimation({center:{x:newX.X, y:'50%'},duration:0});
+		ARBearingLbl.animate(moveLbl);
 	} else
 	{
 		//Not in the display, hide it
-		Heading.hide();
+		ARBearingLbl.hide();
 	}
 
 };
@@ -77,7 +77,7 @@ function simulatorAR() {
 		updateARView({newBearing: e.value * 36});
 	});
 	ARView.add(slider);
-	displayHeadingOnAR();
+	displayBearingOnAR();
 };
 
 
@@ -126,14 +126,14 @@ Ti.Geolocation.purpose = 'To get the compass bearing';
 ARButton = Ti.UI.createButton({title: 'Follow bearing in AR'});
 ARButton.addEventListener('click', showARView);
 
-function displayHeadingOnAR(_args) {
+function displayBearingOnAR(_args) {
     
-	ARView.add(Heading);
+	ARView.add(ARBearingLbl);
 };
 
 function showARView() {
 	if (Ti.Platform.model === 'Simulator' || Ti.Platform.model.indexOf('sdk') !== -1 ){
-		Heading.text = theBearing = 120; // set a value for the simulator
+		ARBearingLbl.text = theBearing = 120; // set a value for the simulator
 		simulatorAR();
 	} else {
 	    theBearing = lastHeading;
@@ -143,8 +143,8 @@ function showARView() {
 	                 autofocus:    false,
 	                 overlay:      ARView
 	              });
-        Heading.text = theBearing;
-		displayHeadingOnAR();
+        ARBearingLbl.text = theBearing;
+		displayBearingOnAR();
 	}
 
 }
