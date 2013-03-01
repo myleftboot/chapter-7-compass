@@ -89,31 +89,31 @@ function updateLabels(_args) {
 	
 	switch(true) {
 		case theBearing>=0 && theBearing<23:
-			headingText = 'N';
+			headingText = 'North';
 			break;
 		case theBearing>=23 && theBearing<68:
-			headingText = 'NE';
+			headingText = 'North East';
 			break;
 		case theBearing>=68 && theBearing<113:
-			headingText = 'E';
+			headingText = 'East';
 			break;
 		case theBearing>=113 && theBearing<158:
-			headingText = 'SE';
+			headingText = 'South East';
 			break;
 		case theBearing>=158 && theBearing<203:
-			headingText = 'S';
+			headingText = 'South';
 			break;
 		case theBearing>=203 && theBearing<248:
-			headingText = 'SW';
+			headingText = 'South West';
 			break;
 		case theBearing>=248 && theBearing<293:
-			headingText = 'W';
+			headingText = 'West';
 			break;
 		case theBearing>=293 && theBearing<338:
-			headingText = 'NW';
+			headingText = 'North West';
 			break;
 		case theBearing>=338 && theBearing<=360:
-			headingText = 'N';
+			headingText = 'North';
 			break;
              }
     lastHeading = _args.heading.magneticHeading;
